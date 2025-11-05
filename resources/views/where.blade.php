@@ -7,7 +7,11 @@
             </li>
         </ul>
         <ul>
+<<<<<<< HEAD
             <img src="map.jpg" alt="" class="h-full w-full object-cover">
+=======
+            <img src="{{ asset('public/map.jpg')}}" alt="" class="h-full w-full object-cover">
+>>>>>>> cbde107b0554aeaf4e3c1face53195bd05da6bd1
         </ul>
     </x-section>
 </x-layout>

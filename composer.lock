@@ -8335,12 +8335,20 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
+<<<<<<< HEAD
     "stability-flags": {},
+=======
+    "stability-flags": [],
+>>>>>>> cbde107b0554aeaf4e3c1face53195bd05da6bd1
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "^8.2"
     },
+<<<<<<< HEAD
     "platform-dev": {},
+=======
+    "platform-dev": [],
+>>>>>>> cbde107b0554aeaf4e3c1face53195bd05da6bd1
     "plugin-api-version": "2.6.0"
 }

@@ -1,2 +1,6 @@
 RewriteEngine On
+<<<<<<< HEAD
 RewriteRule ^(.*)$ public/$1
+=======
+RewriteRule ^(.*) public/1$
+>>>>>>> cbde107b0554aeaf4e3c1face53195bd05da6bd1
