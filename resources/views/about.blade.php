@@ -1,6 +1,5 @@
 <x-layout title="О нас">
     <x-section title="О нас">
-<<<<<<< HEAD
         <div class="bg-white py-12">
         <div class="container mx-auto px-4">
             <div class="text-center">
@@ -9,8 +8,5 @@
             </div>
         </div>
     </div>
-=======
-    ggdgd
->>>>>>> cbde107b0554aeaf4e3c1face53195bd05da6bd1
     </x-section>
 </x-layout>

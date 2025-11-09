@@ -1,6 +1,5 @@
 <x-layout title="Аутентификация">
     <x-section title="Аутентификация">
-<<<<<<< HEAD
         <!-- Сообщения об успехе -->
         @if(session('success'))
         <div class="mb-6 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
@@ -59,18 +58,5 @@
                 </p>
             </div>
         </form>
-=======
-    <form action="" class="shadow-md grid gap-y-6 p-8 w-full lg:w-2/3 justify-self-center">
-        <x-form.div title="Логин">
-            <input type="text" name="login" class="border border-gray-200 p-1">
-            <x-form.error>Error</x-form.error>
-        </x-form.div>
-        <x-form.div title="Пароль">
-            <input type="password" name="password" class="border border-gray-200 p-1">
-            <x-form.error>Error</x-form.error>
-        </x-form.div>
-        <x-form.button>Войти</x-form.button>
-    </form>
->>>>>>> cbde107b0554aeaf4e3c1face53195bd05da6bd1
     </x-section>
 </x-layout>

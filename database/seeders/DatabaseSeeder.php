@@ -21,5 +21,21 @@ class DatabaseSeeder extends Seeder
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
+
+    {
+        // Проверяем, не существует ли уже пользователь admin
+        if (!User::where('login', 'admin')->exists()) {
+            User::create([
+                'surname' => 'Admin',
+                'name' => 'Administrator',
+                'login' => 'admin',
+                'email' => 'admin@copymaster.ru',
+                'password' => Hash::make('admin00'),
+            ]);
+            $this->command->info('Администратор создан: login: admin, password: admin00');
+        } else {
+            $this->command->info('Пользователь admin уже существует');
+        }
+    }
     }
 }

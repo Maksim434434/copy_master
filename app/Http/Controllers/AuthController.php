@@ -6,87 +6,78 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
-    // Показать форму входа
     public function showLogin()
     {
         return view('login');
     }
 
-    // Обработка входа
     public function login(Request $request)
     {
-        $credentials = $request->validate([
+        $request->validate([
             'login' => 'required|string',
             'password' => 'required|string',
         ]);
 
-        // Пытаемся найти пользователя по логину или email
-        $user = User::where('login', $credentials['login'])
-            ->orWhere('email', $credentials['login'])
-            ->first();
+        $login = $request->input('login');
+        $password = $request->input('password');
 
-        if ($user && Hash::check($credentials['password'], $user->password)) {
-            Auth::login($user, $request->boolean('remember'));
-            return redirect()->intended(route('home'))->with('success', 'Добро пожаловать!');
+        // Ищем пользователя
+        $user = User::where('login', $login)
+                   ->orWhere('email', $login)
+                   ->first();
+
+        if ($user) {
+            // Проверяем пароль
+            if (Hash::check($password, $user->password)) {
+                Auth::login($user);
+                
+                if ($user->login === 'admin') {
+                    return redirect('/admin')->with('success', 'Добро пожаловать в админ панель!');
+                }
+                
+                return redirect('/')->with('success', 'Добро пожаловать!');
+            }
         }
 
-        return back()->withErrors([
-            'login' => 'Неверные учетные данные.',
-        ])->onlyInput('login');
+        return back()->with('error', 'Неверный логин или пароль');
     }
 
-    // Показать форму регистрации
     public function showRegister()
     {
         return view('register');
     }
 
-    // Обработка регистрации
     public function register(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $validated = $request->validate([
             'surname' => 'required|string|max:255',
             'name' => 'required|string|max:255',
             'login' => 'required|string|max:255|unique:users',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|confirmed',
             'rules' => 'required|accepted',
-        ], [
-            'rules.accepted' => 'Вы должны принять правила регистрации',
-            'login.unique' => 'Этот логин уже занят',
-            'email.unique' => 'Этот email уже используется',
         ]);
 
-        if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput();
-        }
-
         $user = User::create([
-            'surname' => $request->surname,
-            'name' => $request->name,
-            'login' => $request->login,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'surname' => $validated['surname'],
+            'name' => $validated['name'],
+            'login' => $validated['login'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
         ]);
 
         Auth::login($user);
 
-        return redirect()->route('home')->with('success', 'Регистрация прошла успешно!');
+        return redirect('/')->with('success', 'Регистрация прошла успешно!');
     }
 
-    // Выход из системы
-    public function logout(Request $request)
+    public function logout()
     {
         Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return redirect()->route('home')->with('success', 'Вы успешно вышли из системы.');
+        return redirect('/')->with('success', 'Вы успешно вышли из системы.');
     }
 }

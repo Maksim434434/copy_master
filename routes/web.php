@@ -1,51 +1,81 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-<<<<<<< HEAD
 use App\Http\Controllers\AuthController;
-=======
->>>>>>> cbde107b0554aeaf4e3c1face53195bd05da6bd1
 
+// Главная
 Route::get('/', function () {
     return view('home');
 })->name('home');
 
-Route::get('/where', function () {
-    return view('where');
-})->name('where');
+// Статические страницы
+Route::get('/where', function () { return view('where'); })->name('where');
+Route::get('/catalog', function () { return view('catalog'); })->name('catalog');
+Route::get('/basket', function () { return view('basket'); })->name('basket');
+Route::get('/about', function () { return view('about'); })->name('about');
 
-Route::get('/catalog', function () {
-    return view('catalog');
-})->name('catalog');
-
-Route::get('/basket', function () {
-    return view('basket');
-})->name('basket');
-
-<<<<<<< HEAD
-// Аутентификация через контроллер
+// Аутентификация
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
 Route::post('/register', [AuthController::class, 'register']);
-
-// Временное решение: добавить GET для logout
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout.get');
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::get('/about', function () {
-    return view('about');
-})->name('about');
-=======
-Route::get('/login', function () {
-    return view('login');
-})->name('login');
+// Админка - упрощенная версия пока не создана таблица
+Route::get('/admin', function () {
+    if (!auth()->check() || auth()->user()->login !== 'admin') {
+        return redirect('/login')->with('error', 'Нет доступа к админке');
+    }
+    
+    // Проверяем существует ли таблица categories
+    try {
+        $categories = \App\Models\Category::all();
+    } catch (\Exception $e) {
+        // Если таблицы нет, показываем сообщение
+        return view('admin.setup', ['message' => 'Таблица категорий не создана. Запустите миграцию.']);
+    }
+    
+    return view('admin.index', compact('categories'));
+})->name('admin.index');
 
-Route::get('/register', function () {
-    return view('register');
-})->name('register');
-
-Route::get('/about', function () {
-    return view('about');
-})->name('about');
->>>>>>> cbde107b0554aeaf4e3c1face53195bd05da6bd1
+// Временные маршруты для категорий (добавить после создания таблицы)
+Route::middleware(['auth'])->prefix('admin')->group(function () {
+    // Добавление категории
+    Route::post('/categories', function (\Illuminate\Http\Request $request) {
+        if (auth()->user()->login !== 'admin') {
+            return redirect('/login')->with('error', 'Нет доступа');
+        }
+        
+        try {
+            $request->validate([
+                'name' => 'required|string|max:255',
+                'description' => 'nullable|string',
+            ]);
+            
+            $category = \App\Models\Category::create([
+                'name' => $request->name,
+                'description' => $request->description,
+            ]);
+            
+            return redirect('/admin')->with('success', 'Категория добавлена!');
+        } catch (\Exception $e) {
+            return redirect('/admin')->with('error', 'Ошибка: ' . $e->getMessage());
+        }
+    })->name('admin.categories.store');
+    
+    // Удаление категории
+    Route::delete('/categories/{category}', function ($id) {
+        if (auth()->user()->login !== 'admin') {
+            return redirect('/login')->with('error', 'Нет доступа');
+        }
+        
+        try {
+            $category = \App\Models\Category::findOrFail($id);
+            $category->delete();
+            
+            return redirect('/admin')->with('success', 'Категория удалена!');
+        } catch (\Exception $e) {
+            return redirect('/admin')->with('error', 'Ошибка: ' . $e->getMessage());
+        }
+    })->name('admin.categories.destroy');
+});
