@@ -33,17 +33,25 @@ class AuthController extends Controller
         if ($user) {
             // Проверяем пароль
             if (Hash::check($password, $user->password)) {
-                Auth::login($user);
+                Auth::login($user, $request->boolean('remember'));
                 
-                if ($user->login === 'admin') {
-                    return redirect('/admin')->with('success', 'Добро пожаловать в админ панель!');
+                if ($user->isAdmin()) {
+                    return redirect()->route('admin.index')->with('success', 'Добро пожаловать в админ панель!');
                 }
                 
-                return redirect('/')->with('success', 'Добро пожаловать!');
+                return redirect()->intended('/')->with('success', 'Добро пожаловать!');
+            } else {
+                // Логируем для отладки
+                Log::info('Неверный пароль для пользователя', ['login' => $login]);
             }
+        } else {
+            // Логируем для отладки
+            Log::info('Пользователь не найден', ['login' => $login]);
         }
 
-        return back()->with('error', 'Неверный логин или пароль');
+        return back()->withErrors([
+            'login' => 'Неверный логин или пароль.',
+        ])->withInput($request->only('login'));
     }
 
     public function showRegister()

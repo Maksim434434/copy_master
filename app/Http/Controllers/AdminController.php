@@ -1,4 +1,5 @@
 <?php
+// app/Http/Controllers/AdminController.php
 
 namespace App\Http\Controllers;
 
@@ -13,10 +14,13 @@ class AdminController extends Controller
         $stats = [
             'users_count' => User::count(),
             'products_count' => Product::count(),
-            'latest_users' => User::latest()->take(5)->get(),
+            'products_in_stock' => Product::where('stock', '>', 0)->count(),
+            'total_inventory' => Product::sum('stock'),
             'latest_products' => Product::latest()->take(5)->get(),
         ];
 
-        return view('admin.index', compact('stats'));
+        $products = Product::latest()->get(); // Добавляем продукты
+
+        return view('admin.index', compact('stats', 'products')); // Передаем обе переменные
     }
 }

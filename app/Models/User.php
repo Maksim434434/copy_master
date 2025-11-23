@@ -1,4 +1,5 @@
 <?php
+// app/Models/User.php
 
 namespace App\Models;
 
@@ -10,27 +11,20 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     */
     protected $fillable = [
         'surname',
         'name',
         'login',
         'email',
         'password',
+        'role', // Добавьте это поле
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     */
     protected $hidden = [
         'password',
+        'remember_token', // Добавьте это
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     */
     protected function casts(): array
     {
         return [
@@ -44,7 +38,8 @@ class User extends Authenticatable
      */
     public function isAdmin(): bool
     {
-        return $this->login === 'admin';
+        // Проверяем и по логину и по роли для надежности
+        return $this->login === 'admin' || $this->role === 'admin';
     }
 
     /**
