@@ -19,8 +19,29 @@ class AdminController extends Controller
             'latest_products' => Product::latest()->take(5)->get(),
         ];
 
-        $products = Product::latest()->get(); // Добавляем продукты
+        $products = Product::latest()->get();
+        $users = User::latest()->take(5)->get();
 
-        return view('admin.index', compact('stats', 'products')); // Передаем обе переменные
+        return view('admin.index', compact('stats', 'products', 'users'));
+    }
+
+    public function users()
+    {
+        $users = User::latest()->get();
+        return view('admin.users', compact('users'));
+    }
+
+    public function destroyUser(User $user)
+    {
+        // Запрещаем удаление самого себя
+        if ($user->id === auth()->id()) {
+            return redirect()->route('admin.users')
+                ->with('error', 'Нельзя удалить собственный аккаунт');
+        }
+
+        $user->delete();
+
+        return redirect()->route('admin.users')
+            ->with('success', 'Пользователь успешно удален');
     }
 }

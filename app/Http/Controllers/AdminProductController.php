@@ -1,5 +1,5 @@
 <?php
-// app/Http\Controllers/AdminProductController.php
+// app/Http/Controllers/AdminProductController.php
 
 namespace App\Http\Controllers;
 
@@ -21,7 +21,9 @@ class AdminProductController extends Controller
             'users_count' => \App\Models\User::count(),
         ];
 
-        return view('admin.products.index', compact('products', 'stats'));
+        $users = \App\Models\User::latest()->take(5)->get();
+
+        return view('admin.products.index', compact('products', 'stats', 'users'));
     }
 
     public function create()
@@ -41,16 +43,11 @@ class AdminProductController extends Controller
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
         ]);
 
-        // Если изображение загружено, сохраняем его
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('products', 'public');
             $validated['image'] = $imagePath;
-        } else {
-            // Если изображение не загружено, устанавливаем изображение по умолчанию для категории
-            $validated['image'] = $this->getDefaultImageForCategory($validated['category']);
         }
 
-        // Добавляем slug и активность
         $validated['slug'] = Str::slug($validated['name']) . '-' . Str::random(6);
         $validated['is_active'] = true;
 
@@ -78,19 +75,12 @@ class AdminProductController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            // Удаляем старое изображение если оно было локальным
             if ($product->image && !str_starts_with($product->image, 'http')) {
                 Storage::disk('public')->delete($product->image);
             }
             
             $imagePath = $request->file('image')->store('products', 'public');
             $validated['image'] = $imagePath;
-        } else if (empty($product->image) || str_contains($product->image, 'placeholder')) {
-            // Если изображения не было или это placeholder, устанавливаем по умолчанию
-            $validated['image'] = $this->getDefaultImageForCategory($validated['category']);
-        } else {
-            // Сохраняем существующее изображение
-            $validated['image'] = $product->image;
         }
 
         $product->update($validated);
@@ -101,7 +91,6 @@ class AdminProductController extends Controller
 
     public function destroy(Product $product)
     {
-        // Удаляем изображение если оно локальное (не URL)
         if ($product->image && !str_starts_with($product->image, 'http')) {
             Storage::disk('public')->delete($product->image);
         }
@@ -110,5 +99,11 @@ class AdminProductController extends Controller
 
         return redirect()->route('admin.products.index')
             ->with('success', 'Товар успешно удален');
+    }
+
+    private function getDefaultImageForCategory($category)
+    {
+        // Заглушка для метода
+        return 'products/default.jpg';
     }
 }

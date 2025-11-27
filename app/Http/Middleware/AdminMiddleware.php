@@ -1,4 +1,5 @@
 <?php
+// app/Http/Middleware/AdminMiddleware.php
 
 namespace App\Http\Middleware;
 
@@ -10,14 +11,8 @@ class AdminMiddleware
 {
     public function handle(Request $request, Closure $next)
     {
-        // Проверяем, что пользователь аутентифицирован и является администратором
-        if (!Auth::check()) {
-            return redirect()->route('login')->with('error', 'Пожалуйста, войдите в систему');
-        }
-
-        // Проверяем роль администратора (используем поле role)
-        if (Auth::user()->role !== 'admin') {
-            abort(403, 'Доступ запрещен. Требуются права администратора.');
+        if (!Auth::check() || !Auth::user()->is_admin) {
+            abort(403, 'Доступ запрещен');
         }
 
         return $next($request);

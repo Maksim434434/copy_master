@@ -195,18 +195,17 @@
             </div>
         </div>
 
-        <!-- Призыв к действию -->
-        <div class="py-12 bg-blue-600 text-white">
+    <section class="py-16 bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
             <div class="container mx-auto px-4 text-center">
-                <h2 class="text-2xl font-bold mb-4">Найдите свою идеальную технику</h2>
-                <p class="text-blue-100 mb-6 max-w-xl mx-auto">
+                <h2 class="text-3xl md:text-4xl font-bold mb-6">Готовы выбрать технику?</h2>
+                <p class="text-blue-100 text-lg md:text-xl mb-8 max-w-2xl mx-auto leading-relaxed">
                     Ознакомьтесь с нашим каталогом и выберите технику, которая подходит именно вам
                 </p>
                 <a href="{{ route('catalog') }}" 
-                   class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors inline-block">
+                class="bg-white text-blue-600 px-10 py-4 rounded-xl font-bold text-lg hover:bg-blue-50 hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 inline-block shadow-lg">
                     Перейти в каталог
                 </a>
             </div>
-        </div>
+        </section>
     </x-section>
 </x-layout>

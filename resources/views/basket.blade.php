@@ -1,3 +1,4 @@
+<!-- resources/views/basket.blade.php -->
 <x-layout title="Корзина">
     <x-section title="Корзина">
         <div class="container mx-auto px-4 py-8">
@@ -46,11 +47,12 @@
                                     </div>
                                     
                                     <div class="flex items-center space-x-4">
-                                        <form method="POST" action="{{ route('cart.update', $product) }}">
+                                        <form method="POST" action="{{ route('cart.update', $product) }}" class="flex items-center">
                                             @csrf
                                             <input type="number" name="quantity" value="{{ $product->quantity }}" 
                                                    min="1" max="{{ $product->stock }}"
-                                                   class="w-20 px-3 py-2 border border-gray-300 rounded-lg text-center">
+                                                   class="w-20 px-3 py-2 border border-gray-300 rounded-lg text-center"
+                                                   onchange="this.form.submit()">
                                         </form>
                                         
                                         <form method="POST" action="{{ route('cart.remove', $product) }}">
@@ -100,9 +102,10 @@
                                 </div>
                             </div>
                             
-                            <button class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-medium transition-colors shadow-sm">
+                            <a href="{{ route('checkout') }}" 
+                               class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-medium transition-colors shadow-sm block text-center">
                                 Оформить заказ
-                            </button>
+                            </a>
                             
                             <a href="{{ route('catalog') }}" 
                                class="block text-center text-blue-600 hover:text-blue-800 mt-4 font-medium">
